@@ -1,19 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { introMessageState, introSelector } from "recoil/recoilState";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Header } from "components/Header";
+import { Toolbar } from "components/Toolbar";
+import styled from "styled-components";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const introMessage = useRecoilValue(introMessageState);
-  const [choiceMessage, setChoiceMessage] = useRecoilState(introSelector);
-
   return (
-    <div>
-      <button onClick={() => setChoiceMessage("change")}>click</button>
-      <p>{introMessage}</p>
-      <p>{choiceMessage}</p>
-      <div onClick={() => navigate("/query")}>query</div>
-      <div onClick={() => navigate("/recoil")}>recoil</div>
-    </div>
+    <Container>
+      <Header />
+      <Toolbar />
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
