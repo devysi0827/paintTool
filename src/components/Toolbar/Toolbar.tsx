@@ -16,5 +16,7 @@ export default function Toolbar() {
 
 const Container = styled.div`
   display: flex;
+  align-items: center;
+  height: 10vh;
   gap: 10px;
 `;

@@ -14,5 +14,6 @@ export default function Header() {
 
 const Container = styled.div`
   display: flex;
+  height: 2vh;
   gap: 10px;
 `;
