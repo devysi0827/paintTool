@@ -3,25 +3,37 @@ import styled from "styled-components";
 import Konva from "konva";
 import { opacitys } from "./static";
 import { PenMode } from "./type";
+import {
+  canvasHistoryIdxState,
+  canvasHistoryState,
+  eraserSizeState,
+  penColorState,
+  penModeState,
+  penOpacityState,
+  penSizeState,
+} from "store/canvasStore";
+import { useRecoilState } from "recoil";
 
 export default function Canvas() {
   const [isPainting, setIsPainting] = useState<boolean>(false);
-
   // konva
   const stageRef = useRef<Konva.Stage | null>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
   const lastLineRef = useRef<Konva.Line | null>(null);
 
   // undo, redo layer
-  const [history, setHistory] = useState<Konva.Node[]>([]);
-  const [historyIdx, setHistoryIdx] = useState<number>(0);
+  const [history, setHistory] =
+    useRecoilState<Konva.Node[]>(canvasHistoryState);
+  const [historyIdx, setHistoryIdx] = useRecoilState<number>(
+    canvasHistoryIdxState
+  );
 
   // pen value
-  const [penMode, setPenMode] = useState<PenMode>(false);
-  const [lineColor, setLineColor] = useState<string>("#f80000");
-  const [lineWidth, setLineWidth] = useState<number>(10);
-  const [lineOpacity, setLineOpacity] = useState<number>(10);
-  const [eraserWidth, setEraserWidth] = useState<number>(10);
+  const [penMode, setPenMode] = useRecoilState<PenMode>(penModeState);
+  const [penColor, setPenColor] = useRecoilState<string>(penColorState);
+  const [penSize, setPenSize] = useRecoilState<number>(penSizeState);
+  const [penOpacity, setPenOpacity] = useRecoilState<number>(penOpacityState);
+  const [eraserSize, setEraserSize] = useRecoilState<number>(eraserSizeState);
 
   //  function
   const startPaint = () => {
@@ -30,8 +42,8 @@ export default function Canvas() {
     const pos = stageRef.current.getPointerPosition();
     if (!pos) return;
     const newLine = new Konva.Line({
-      stroke: penMode === "eraser" ? "#000" : lineColor + opacitys[lineOpacity],
-      strokeWidth: penMode === "eraser" ? eraserWidth : lineWidth,
+      stroke: penMode === "eraser" ? "#000" : penColor + opacitys[penOpacity],
+      strokeWidth: penMode === "eraser" ? eraserSize : penSize,
       globalCompositeOperation:
         penMode === "eraser" ? "destination-out" : "source-over",
       lineCap: "round",
@@ -61,34 +73,6 @@ export default function Canvas() {
   const stopPaint = () => {
     setIsPainting(false);
   };
-
-  // const clearCanvas = () => {
-  //   if (!layerRef.current?.children) return;
-  //   layerRef.current.removeChildren();
-  //   layerRef.current.clear();
-  // };
-
-  // const undoCanvas = () => {
-  //   const layer = layerRef.current;
-  //   if (historyIdx <= 0 || !layer) return;
-
-  //   if (historyIdx >= 1 && layer.children) {
-  //     const lastChild = layer.children[layer.children.length - 1];
-  //     setHistory([...history, lastChild]);
-  //     lastChild.remove();
-  //     setHistoryIdx((x) => x - 1);
-  //   }
-  // };
-
-  // const redoCanvas = () => {
-  //   if (history.length === 0) return;
-
-  //   const addChild = history.pop();
-  //   if (addChild instanceof Konva.Group || addChild instanceof Konva.Shape) {
-  //     layerRef.current?.add(addChild);
-  //   }
-  //   setHistoryIdx((x) => x + 1);
-  // };
 
   useEffect(() => {
     const stage = new Konva.Stage({
